@@ -15,7 +15,7 @@ export default function ProcessSection() {
 
   const stepBg = ["bg-marigold", "bg-brick", "bg-palm", "bg-indigo"] as const;
   // These 4 images are generic community photos, not literal screenshots of
-  // "reviewing a transcript" etc. — your assets folder doesn't have app
+  // "reviewing a transcript" etc.   your assets folder doesn't have app
   // screenshots, so these are stand-ins. Worth swapping for real in-app
   // screenshots once you have them; that'll sell the product much better
   // than stock-feeling photos here specifically.
@@ -57,11 +57,15 @@ export default function ProcessSection() {
               className="grid items-center gap-8 md:grid-cols-2 md:gap-14"
             >
               <div className={reversed ? "md:order-2" : "md:order-1"}>
-                <span
+                <motion.span
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.1 }}
                   className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-full text-base font-bold text-paper ${stepBg[i]}`}
                 >
                   {i + 1}
-                </span>
+                </motion.span>
                 <h3 className="font-[family-name:var(--font-display)] text-xl font-semibold text-indigo">
                   {step.title.replace(/^\d+\.\s*/, "")}
                 </h3>
@@ -70,14 +74,15 @@ export default function ProcessSection() {
                 </p>
               </div>
               <div
-                className={`relative aspect-[4/3] w-full overflow-hidden rounded-2xl ${reversed ? "md:order-1" : "md:order-2"}`}
+                className={`group relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] ${reversed ? "md:order-1" : "md:order-2"}`}
               >
                 <Image
                   src={step.img}
                   alt={step.title.replace(/^\d+\.\s*/, "")}
                   fill
+                  loading="eager"
                   sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 />
               </div>
             </motion.div>

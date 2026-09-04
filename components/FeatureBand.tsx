@@ -43,9 +43,9 @@ export default function FeatureBand() {
   const t = copy[lang];
 
   const features = [
-    { icon: <MicIcon />, title: t.feature1Title, body: t.feature1Body },
-    { icon: <MapPinIcon />, title: t.feature2Title, body: t.feature2Body },
-    { icon: <ShieldIcon />, title: t.feature3Title, body: t.feature3Body },
+    { id: "speak", icon: <MicIcon />, title: t.feature1Title, body: t.feature1Body },
+    { id: "track", icon: <MapPinIcon />, title: t.feature2Title, body: t.feature2Body },
+    { id: "privacy", icon: <ShieldIcon />, title: t.feature3Title, body: t.feature3Body },
   ];
 
   return (
@@ -68,14 +68,15 @@ export default function FeatureBand() {
           viewport={{ once: true, margin: "-80px" }}
           className="grid gap-6 sm:grid-cols-3"
         >
-          {features.map((f, i) => (
+          {features.map((f) => (
             <motion.div
-              key={i}
+              key={f.id}
               variants={item}
-              whileHover={{ y: -4 }}
-              className="rounded-2xl bg-paper/[0.08] p-6"
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 300, damping: 22 }}
+              className="group rounded-2xl bg-paper/[0.08] p-6 transition-colors hover:bg-paper/[0.12]"
             >
-              <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-marigold text-indigo">
+              <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-marigold text-indigo transition-transform duration-300 group-hover:scale-110">
                 {f.icon}
               </span>
               <h3 className="font-semibold">{f.title}</h3>

@@ -12,7 +12,7 @@ export default function CtaBanner() {
   const t = copy[lang];
 
   return (
-    <section className="relative h-full lg:h-screen overflow-hidden py-20 text-paper sm:py-28">
+    <section className="relative overflow-hidden py-20 text-paper sm:py-28">
       {/* Background photo */}
       <Image
         src={panelImg}
@@ -20,13 +20,13 @@ export default function CtaBanner() {
         fill
         sizes="100vw"
         className="object-cover"
-        priority={false}
+        priority
       />
-      {/* Overlay — keeps text legible over the photo, brand-tinted rather
+      {/* Overlay   keeps text legible over the photo, brand-tinted rather
           than plain black so it still reads as DengeVoice. */}
       <div className="absolute inset-0 bg-gradient-to-r from-indigo/90 via-indigo/80 to-indigo/50" />
 
-      {/* Ambient blob accents — purely decorative motion */}
+      {/* Ambient blob accents   purely decorative motion */}
       <motion.div
         aria-hidden
         animate={{ x: [0, 24, 0], y: [0, -16, 0] }}
@@ -57,9 +57,23 @@ export default function CtaBanner() {
           <p className="mt-4 max-w-md text-paper/85">{t.ctaBannerBody}</p>
           <Link
             href="/record"
-            className="mt-7 inline-flex items-center gap-2 rounded-full bg-marigold px-6 py-3 font-semibold text-indigo shadow-lg shadow-marigold/20 transition hover:scale-[1.03]"
+            className="group mt-7 inline-flex items-center gap-2 rounded-full bg-marigold px-6 py-3 font-semibold text-indigo shadow-lg shadow-marigold/20 transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98]"
           >
             {t.ctaStart}
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
           </Link>
         </motion.div>
       </div>

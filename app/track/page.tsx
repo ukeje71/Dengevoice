@@ -1,4 +1,4 @@
-import TrackScreen from "@/components/TrackScreen";
+import TrackScreen from "@/app/screens/TrackScreen";
 
 export default async function TrackPage({
   searchParams,

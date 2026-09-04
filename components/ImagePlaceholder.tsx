@@ -1,6 +1,6 @@
 // Drop-in placeholder for real photography. Swap these out by replacing the
 // <ImagePlaceholder> usage with a real <Image> (next/image) once you have
-// photos — the `label` prop tells you what each spot expects.
+// photos   the `label` prop tells you what each spot expects.
 
 export default function ImagePlaceholder({
   label,

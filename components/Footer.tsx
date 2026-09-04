@@ -10,7 +10,7 @@ export default function Footer() {
   const t = copy[lang];
   const [email, setEmail] = useState("");
 
-  // TODO: not wired to anything yet — there's no backend endpoint or
+  // TODO: not wired to anything yet   there's no backend endpoint or
   // Supabase table for newsletter signups. Hook this up (or remove it)
   // before launch; right now submitting just clears the field.
   const handleSubscribe = (e: React.FormEvent) => {
@@ -48,16 +48,23 @@ export default function Footer() {
               placeholder={t.footerSubscribePlaceholder}
               className="w-full rounded-full border border-indigo/15 bg-white/70 px-4 py-2.5 text-sm text-ink outline-none focus:border-indigo/40"
             />
-            <button
+            <motion.button
               type="submit"
-              className="shrink-0 rounded-full bg-marigold px-5 py-2.5 text-sm font-semibold text-indigo transition hover:scale-[1.03]"
+              whileTap={{ scale: 0.96 }}
+              className="shrink-0 rounded-full bg-marigold px-5 py-2.5 text-sm font-semibold text-indigo transition-transform duration-300 hover:scale-[1.03]"
             >
               {t.footerSubscribeButton}
-            </button>
+            </motion.button>
           </form>
         </motion.div>
 
-        <div className="pt-8 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="pt-8 text-center"
+        >
           <p className="font-[family-name:var(--font-display)] text-base text-indigo">
             {t.footerLine}
           </p>
@@ -67,7 +74,7 @@ export default function Footer() {
           <p className="mt-6 text-xs text-ink/40">
             © {new Date().getFullYear()} {t.footerRights}
           </p>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );

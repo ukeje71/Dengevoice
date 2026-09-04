@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
-// Shared scroll-reveal wrapper — fades/slides an element in once when it
+// Shared scroll-reveal wrapper   fades/slides an element in once when it
 // enters the viewport. Used across the landing page for a consistent,
 // non-jarring animation feel instead of one-off animation props everywhere.
 export default function Reveal({

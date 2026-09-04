@@ -1,4 +1,4 @@
-import RecordScreen from "@/components/RecordScreen";
+import RecordScreen from "@/app/screens/RecordScreen";
 
 export default async function RecordPage({
   searchParams,

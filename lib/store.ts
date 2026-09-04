@@ -7,7 +7,7 @@ type AppStore = {
   toggleLang: () => void;
   setLang: (lang: Lang) => void;
 
-  // In-progress complaint — filled in as the citizen moves through
+  // In-progress complaint   filled in as the citizen moves through
   // record -> confirm -> submit. Reset after a successful submit.
   draft: Partial<Complaint>;
   setDraft: (patch: Partial<Complaint>) => void;

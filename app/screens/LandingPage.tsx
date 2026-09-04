@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useLangStore } from "@/lib/store";
 import { copy } from "@/lib/i18n";
 import Header from "@/components/Header";
+import TrustPanel from "@/components/TrustPanel";
 import CategoriesSection from "@/components/CategoriesSection";
 import CtaBanner from "@/components/CtaBanner";
 import ProcessSection from "@/components/ProcessSection";
@@ -18,12 +19,12 @@ export default function LandingPage() {
   const t = copy[lang];
 
   return (
-    <main className="min-h-screen text-ink">
+    <main className="min-h-screen text-ink max-w-screen">
       <Header />
 
-      {/* Hero — preserved exactly as before, now with a background photo */}
+      {/* Hero   preserved exactly as before, now with a background photo */}
       <section className="relative overflow-hidden">
-        {/* Background photo — kept subtle behind a paper-tinted gradient so
+        {/* Background photo   kept subtle behind a paper-tinted gradient so
             hero text stays fully legible over any photo. */}
         <Image
           src={heroImg}
@@ -37,23 +38,42 @@ export default function LandingPage() {
 
         <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-6 md:grid-cols-[1.15fr_0.85fr] md:items-center md:gap-6 md:pb-24 md:pt-14">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+            }}
           >
-            <h1 className="text-balance font-[family-name:var(--font-display)] text-4xl font-semibold leading-[1.08] text-indigo sm:text-5xl md:text-[3.25rem]">
+            <motion.span
+              variants={heroItem}
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo/15 bg-white/60 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-indigo/80 backdrop-blur-sm"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-marigold" />
+              {t.heroKicker}
+            </motion.span>
+            <motion.h1
+              variants={heroItem}
+              className="text-balance font-[family-name:var(--font-display)] text-4xl font-semibold leading-[1.08] text-indigo sm:text-5xl md:text-[3.25rem]"
+            >
               {t.heroTitle}
-            </h1>
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-ink/80">
+            </motion.h1>
+            <motion.p
+              variants={heroItem}
+              className="mt-5 max-w-md text-lg leading-relaxed text-ink/80"
+            >
               {t.heroSubtitle}
-            </p>
+            </motion.p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <motion.div
+              variants={heroItem}
+              className="mt-8 flex flex-wrap items-center gap-4"
+            >
               <Link
                 href="/record"
-                className="group flex items-center gap-3 rounded-full bg-marigold py-3 pl-4 pr-6 shadow-lg shadow-marigold/30 transition hover:scale-[1.03]"
+                className="group flex items-center gap-3 rounded-full bg-marigold py-3 pl-4 pr-6 shadow-lg shadow-marigold/30 transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98]"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo transition-transform duration-300 group-hover:scale-110">
                   <svg
                     width="18"
                     height="18"
@@ -74,14 +94,14 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/record?mode=text"
-                className="text-sm font-medium text-ink/60 underline underline-offset-4 hover:text-ink"
+                className="text-sm font-medium text-ink/60 underline underline-offset-4 transition-colors hover:text-ink"
               >
                 {t.ctaTypeInstead}
               </Link>
-            </div>
+            </motion.div>
           </motion.div>
 
-          {/* Decorative voice-wave graphic — visual anchor, animated as if
+          {/* Decorative voice-wave graphic   visual anchor, animated as if
               actively recording */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -96,12 +116,13 @@ export default function LandingPage() {
       </section>
 
       {/* Storytelling / demo section */}
-      <section className="border-y border-indigo/10 bg-indigo py-14 text-paper sm:py-20 md:h-[25rem]">
+      <section className="border-y border-indigo/10 bg-indigo py-16 text-paper sm:py-24">
         <div className="mx-auto max-w-7xl px-6">
           <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
             className="mb-8 text-center text-xs font-semibold uppercase tracking-[0.2em] text-marigold"
           >
             {t.storyEyebrow}
@@ -111,7 +132,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="grid gap-6 md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-8"
           >
             <div className="rounded-2xl bg-paper/[0.07] p-6">
@@ -119,15 +140,19 @@ export default function LandingPage() {
                 {t.storyBeforeLabel}
               </p>
               {/* TODO: replace with a real example of mixed Igbo-English
-                  speech — this is the app's core value prop and needs to
+                  speech   this is the app's core value prop and needs to
                   sound authentic to actual speakers. */}
               <p className="font-[family-name:var(--font-display)] text-lg italic leading-snug text-paper/95">
-                &ldquo;There is armed robbery happening right now at the market in Ariaria, Aba. I need police to come immediately, people are in danger&rdquo;
+                &ldquo; There is armed robbery happening right now at the market
+                in Ariaria, Aba. I need police to come immediately, people are
+                in danger &rdquo;
               </p>
             </div>
 
             <div className="flex justify-center">
-              <svg
+              <motion.svg
+                animate={{ y: [0, 6, 0] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
                 className="h-8 w-8 rotate-90 text-marigold md:rotate-0"
                 viewBox="0 0 24 24"
                 fill="none"
@@ -138,7 +163,7 @@ export default function LandingPage() {
               >
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
-              </svg>
+              </motion.svg>
             </div>
 
             <div className="rounded-2xl border border-marigold/30 bg-paper p-6 text-ink">
@@ -164,6 +189,7 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <TrustPanel />
       <CategoriesSection />
       <CtaBanner />
       <ProcessSection />
@@ -172,6 +198,15 @@ export default function LandingPage() {
     </main>
   );
 }
+
+const heroItem = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
 
 function VoiceWave() {
   const heights = [18, 34, 52, 70, 46, 60, 30, 44, 24, 38];
@@ -189,7 +224,11 @@ function VoiceWave() {
             delay: i * 0.08,
           }}
           className={`w-2.5 rounded-full sm:w-3 ${
-            i % 3 === 0 ? "bg-marigold" : i % 3 === 1 ? "bg-brick" : "bg-indigo/70"
+            i % 3 === 0
+              ? "bg-marigold"
+              : i % 3 === 1
+                ? "bg-brick"
+                : "bg-indigo/70"
           }`}
         />
       ))}

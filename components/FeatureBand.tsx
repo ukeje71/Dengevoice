@@ -15,7 +15,16 @@ const item = {
 
 function MicIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
       <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
       <line x1="12" y1="19" x2="12" y2="23" />
@@ -24,7 +33,16 @@ function MicIcon() {
 }
 function MapPinIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
       <circle cx="12" cy="10" r="3" />
     </svg>
@@ -32,7 +50,16 @@ function MapPinIcon() {
 }
 function ShieldIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   );
@@ -43,9 +70,24 @@ export default function FeatureBand() {
   const t = copy[lang];
 
   const features = [
-    { id: "speak", icon: <MicIcon />, title: t.feature1Title, body: t.feature1Body },
-    { id: "track", icon: <MapPinIcon />, title: t.feature2Title, body: t.feature2Body },
-    { id: "privacy", icon: <ShieldIcon />, title: t.feature3Title, body: t.feature3Body },
+    {
+      id: "speak",
+      icon: <MicIcon />,
+      title: t.feature1Title,
+      body: t.feature1Body,
+    },
+    {
+      id: "track",
+      icon: <MapPinIcon />,
+      title: t.feature2Title,
+      body: t.feature2Body,
+    },
+    {
+      id: "privacy",
+      icon: <ShieldIcon />,
+      title: t.feature3Title,
+      body: t.feature3Body,
+    },
   ];
 
   return (

@@ -42,14 +42,15 @@ export default function LandingPage() {
             animate="show"
             variants={{
               hidden: {},
-              show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+              show: {
+                transition: { staggerChildren: 0.09, delayChildren: 0.05 },
+              },
             }}
           >
             <motion.span
               variants={heroItem}
-              className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo/15 bg-white/60 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-indigo/80 backdrop-blur-sm"
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo/15 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-indigo/80 backdrop-blur-sm"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-marigold" />
               {t.heroKicker}
             </motion.span>
             <motion.h1
@@ -152,7 +153,11 @@ export default function LandingPage() {
             <div className="flex justify-center">
               <motion.svg
                 animate={{ y: [0, 6, 0] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 1.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
                 className="h-8 w-8 rotate-90 text-marigold md:rotate-0"
                 viewBox="0 0 24 24"
                 fill="none"

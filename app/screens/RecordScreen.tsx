@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 import { useAppStore } from "@/lib/store";
 import { copy } from "@/lib/i18n";
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "@/types/complaint";
+import type { LanguageCode } from "@/types/complaint";
 import Header from "@/components/Header";
 import ProgressSteps from "@/components/ProgressSteps";
 
@@ -14,16 +16,27 @@ type RecordingState = "idle" | "recording" | "processing" | "error";
 
 export default function RecordScreen({ initialMode }: { initialMode: Mode }) {
   const router = useRouter();
-  const { lang, setDraft } = useAppStore();
+  const { lang, draft, setDraft } = useAppStore();
   const t = copy[lang];
 
   const [mode, setMode] = useState<Mode>(initialMode);
   const [state, setState] = useState<RecordingState>("idle");
   const [typedText, setTypedText] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // Spoken-input language (what the citizen speaks), distinct from the UI
+  // display language. Defaults to Igbo; persisted onto the draft so the
+  // confirm screen can pass it to the structuring step.
+  const [language, setLanguage] = useState<LanguageCode>(
+    (draft.primaryLanguage as LanguageCode) ?? DEFAULT_LANGUAGE,
+  );
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+
+  function selectLanguage(code: LanguageCode) {
+    setLanguage(code);
+    setDraft({ primaryLanguage: code });
+  }
 
   async function startRecording() {
     setErrorMsg(null);
@@ -39,9 +52,7 @@ export default function RecordScreen({ initialMode }: { initialMode: Mode }) {
       recorder.start();
       setState("recording");
     } catch {
-      setErrorMsg(
-        "Couldn't access your microphone. Check browser permissions, or use 'Type instead' below.",
-      );
+      setErrorMsg(t.recordMicError);
       setState("error");
     }
   }
@@ -61,6 +72,7 @@ export default function RecordScreen({ initialMode }: { initialMode: Mode }) {
     try {
       const formData = new FormData();
       formData.append("audio", audioBlob, "complaint.webm");
+      formData.append("language", language);
 
       const res = await fetch("/api/transcribe", {
         method: "POST",
@@ -70,13 +82,14 @@ export default function RecordScreen({ initialMode }: { initialMode: Mode }) {
 
       if (!res.ok) throw new Error(data.error || "Transcription failed");
 
-      setDraft({ originalTranscript: data.transcript });
+      setDraft({
+        originalTranscript: data.transcript,
+        primaryLanguage: language,
+      });
       router.push("/confirm");
     } catch (err) {
       setErrorMsg(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong transcribing your recording. Try 'Type instead' below.",
+        err instanceof Error ? err.message : t.recordTranscribeError,
       );
       setState("error");
     }
@@ -84,7 +97,10 @@ export default function RecordScreen({ initialMode }: { initialMode: Mode }) {
 
   function submitTyped() {
     if (!typedText.trim()) return;
-    setDraft({ originalTranscript: typedText.trim() });
+    setDraft({
+      originalTranscript: typedText.trim(),
+      primaryLanguage: language,
+    });
     router.push("/confirm");
   }
 
@@ -103,6 +119,8 @@ export default function RecordScreen({ initialMode }: { initialMode: Mode }) {
         >
           {t.recordTitle}
         </motion.h1>
+
+        <LanguageSelector t={t} language={language} onSelect={selectLanguage} />
 
         <AnimatePresence mode="wait">
           {mode === "voice" ? (
@@ -144,6 +162,56 @@ export default function RecordScreen({ initialMode }: { initialMode: Mode }) {
         </AnimatePresence>
       </div>
     </main>
+  );
+}
+
+// ---------- Language selector ----------
+// Lets the citizen pick the language they'll speak. All five are first-class
+// inputs now; Igbo stays the default selection. Keyed by stable language code,
+// never by translated text (CLAUDE.md gotcha #1).
+function LanguageSelector({
+  t,
+  language,
+  onSelect,
+}: {
+  t: Record<string, string>;
+  language: LanguageCode;
+  onSelect: (code: LanguageCode) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.15 }}
+      className="mt-8 w-full"
+    >
+      <p className="mb-3 text-center text-sm font-semibold text-indigo">
+        {t.recordLanguageLabel}
+      </p>
+      <div className="flex flex-wrap justify-center gap-2">
+        {SUPPORTED_LANGUAGES.map((l) => {
+          const active = l.code === language;
+          return (
+            <motion.button
+              key={l.code}
+              type="button"
+              onClick={() => onSelect(l.code)}
+              whileTap={{ scale: 0.95 }}
+              animate={{ scale: active ? 1.03 : 1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className={clsx(
+                "relative rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                active
+                  ? "border-indigo bg-indigo text-paper"
+                  : "border-indigo/20 bg-white/60 text-indigo hover:border-indigo/40",
+              )}
+            >
+              {l.native}
+            </motion.button>
+          );
+        })}
+      </div>
+    </motion.div>
   );
 }
 
@@ -208,11 +276,7 @@ function VoiceCard({
           onClick={recording ? onStop : onStart}
           disabled={processing}
           whileTap={{ scale: 0.94 }}
-          animate={
-            recording
-              ? { scale: [1, 1.05, 1] }
-              : { scale: 1 }
-          }
+          animate={recording ? { scale: [1, 1.05, 1] } : { scale: 1 }}
           transition={
             recording
               ? { duration: 1.4, repeat: Infinity, ease: "easeInOut" }
@@ -305,7 +369,7 @@ function VoiceCard({
             {state === "idle" && t.ctaStart}
             {state === "recording" && t.recordListening}
             {state === "processing" && t.recordProcessing}
-            {state === "error" && "Try again"}
+            {state === "error" && t.recordTryAgain}
           </motion.p>
         </AnimatePresence>
       </div>
@@ -368,7 +432,7 @@ function TextCard({
         >
           {value.length}
         </motion.span>
-        characters
+        {t.recordCharacters}
       </div>
 
       <motion.button

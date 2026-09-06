@@ -1,20 +1,26 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useLangStore } from "@/lib/store";
+import { copy } from "@/lib/i18n";
 
 // Visualizes where a complaint sits in its lifecycle (received -> under
 // review -> in progress -> resolved). "closed" is treated as reaching the
-// final stage too, but its real label still shows above via STATUS_LABELS
-// in TrackScreen — this component only draws the stage positions.
+// final stage too, but its real label still shows above in TrackScreen —
+// this component only draws the stage positions.
+// Stage list keys off stable English enum values; the displayed label is
+// looked up per-language via the i18n key (CLAUDE.md gotcha #2).
 const STAGES = ["received", "under_review", "in_progress", "resolved"] as const;
-const LABELS: Record<string, string> = {
-  received: "Received",
-  under_review: "Under review",
-  in_progress: "In progress",
-  resolved: "Resolved",
+const STAGE_LABEL_KEYS: Record<string, string> = {
+  received: "statusReceived",
+  under_review: "statusUnderReview",
+  in_progress: "statusInProgress",
+  resolved: "statusResolved",
 };
 
 export default function StatusStepper({ status }: { status: string }) {
+  const { lang } = useLangStore();
+  const t = copy[lang];
   const isTerminal = status === "resolved" || status === "closed";
   let activeIndex = STAGES.indexOf(status as (typeof STAGES)[number]);
   if (activeIndex === -1) activeIndex = isTerminal ? STAGES.length - 1 : 0;
@@ -54,7 +60,7 @@ export default function StatusStepper({ status }: { status: string }) {
                 </span>
               </div>
               <span className="hidden text-center text-[10px] font-medium text-ink/60 sm:block">
-                {LABELS[stage]}
+                {t[STAGE_LABEL_KEYS[stage]] ?? stage}
               </span>
             </div>
             {i < STAGES.length - 1 && (

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { TranscribeResult } from "@/types/complaint";
+import { DEFAULT_LANGUAGE, isSupportedLanguage } from "@/types/complaint";
 
 const UPLOAD_URL = "https://infer.voice.intron.io/file/v1/upload";
 const STATUS_URL = (fileId: string) =>
@@ -25,6 +26,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No audio file provided" }, { status: 400 });
   }
 
+  // Language the citizen said they're speaking. Defaults to Igbo (the
+  // project's validated pair). Anything not in SUPPORTED_LANGUAGES falls back
+  // to Igbo rather than forwarding an arbitrary code Sahara might reject.
+  // NOTE: only "ig" is confirmed working with Sahara; yo/ha/pcm/en are
+  // wired-through/beta and unverified against the ASR at time of writing.
+  const rawLang = formData.get("language");
+  const language =
+    typeof rawLang === "string" && isSupportedLanguage(rawLang)
+      ? rawLang
+      : DEFAULT_LANGUAGE;
+
   // --- Step 1: upload the audio file ---
   // MediaRecorder in the browser produces audio/webm -- the filename here
   // needs a real extension or Sahara rejects it as an invalid file type.
@@ -32,7 +44,7 @@ export async function POST(req: NextRequest) {
   const uploadForm = new FormData();
   uploadForm.append("audio_file_blob", audioFile, filename);
   uploadForm.append("audio_file_name", filename);
-  uploadForm.append("use_language_asr_input", "ig"); // Igbo-English code-switching
+  uploadForm.append("use_language_asr_input", language); // e.g. "ig" (Igbo-English code-switching)
   uploadForm.append("use_category", "file_category_legal");
 
   const uploadRes = await fetch(UPLOAD_URL, {

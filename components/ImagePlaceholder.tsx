@@ -11,7 +11,7 @@ export default function ImagePlaceholder({
 }) {
   return (
     <div
-      className={`flex items-center justify-center rounded-2xl border-2 border-dashed border-indigo/20 bg-indigo/[0.04] text-center ${className}`}
+      className={`flex items-center justify-center  rounded-sm border-2 border-dashed border-indigo/20 bg-indigo/[0.04] text-center ${className}`}
     >
       <div className="px-4 py-6">
         <svg

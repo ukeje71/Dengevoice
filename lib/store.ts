@@ -17,12 +17,30 @@ type AppStore = {
 const emptyDraft: Partial<Complaint> = {
   isAnonymous: false,
   urgency: "medium",
+  primaryLanguage: "ig",
 };
+
+// UI display languages, in header/dropdown order. Same set as the spoken-input
+// languages (SUPPORTED_LANGUAGES), but typed as the i18n `Lang` union so the
+// display layer and copy object stay in lockstep.
+export const UI_LANGUAGES: { code: Lang; native: string }[] = [
+  { code: "en", native: "English" },
+  { code: "ig", native: "Igbo" },
+  { code: "yo", native: "Yorùbá" },
+  { code: "ha", native: "Hausa" },
+  { code: "pcm", native: "Naijá" },
+];
 
 export const useAppStore = create<AppStore>((set) => ({
   lang: "en",
+  // Cycles through the UI languages in order. Kept for the old binary
+  // callers; the header now uses setLang for direct selection.
   toggleLang: () =>
-    set((state) => ({ lang: state.lang === "en" ? "ig" : "en" })),
+    set((state) => {
+      const i = UI_LANGUAGES.findIndex((l) => l.code === state.lang);
+      const next = UI_LANGUAGES[(i + 1) % UI_LANGUAGES.length];
+      return { lang: next.code };
+    }),
   setLang: (lang) => set({ lang }),
 
   draft: emptyDraft,

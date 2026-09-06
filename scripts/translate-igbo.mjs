@@ -1,10 +1,13 @@
-// One-time script: calls Gemini to translate the landing page's English
-// copy into Igbo, then writes the result straight into lib/i18n.ts.
+// One-time script: calls Gemini to translate the app's English UI copy into
+// every other supported language (Igbo, Yoruba, Hausa, Nigerian Pidgin), then
+// writes the result straight into lib/i18n.ts.
 //
-// This is NOT called at runtime / per page load   it's run manually,
-// once, whenever the English copy changes. The output is still
-// machine-translated: flag it for native-speaker review before this
-// ships to real users.
+// This is NOT called at runtime / per page load -- it's run manually, once,
+// whenever the English copy changes. The output is still machine-translated:
+// flag it for native-speaker review before this ships to real users.
+//
+// (The filename says "igbo" for historical reasons -- it now does all five
+//  languages. Kept the name so existing docs/commands still point at it.)
 //
 // Usage:
 //   node --env-file=.env.local scripts/translate-igbo.mjs
@@ -24,7 +27,17 @@ if (!apiKey) {
   process.exit(1);
 }
 
-// Source of truth   English copy. Keep this in sync with lib/i18n.ts's
+// Languages to generate, keyed by the same stable codes used across the app
+// (types/complaint.ts SUPPORTED_LANGUAGES / lib/i18n.ts Lang). English is the
+// source and is written verbatim, so it's not in this list.
+const TARGET_LANGUAGES = [
+  { code: "ig", name: "Igbo" },
+  { code: "yo", name: "Yoruba" },
+  { code: "ha", name: "Hausa" },
+  { code: "pcm", name: "Nigerian Pidgin (Naijá)" },
+];
+
+// Source of truth -- English copy. Keep this in sync with lib/i18n.ts's
 // `en` block if you edit copy there.
 const en = {
   appName: "DengeVoice",
@@ -35,8 +48,7 @@ const en = {
 
   heroTitle: "Report it in your own words. Not theirs.",
   heroSubtitle:
-    "You shouldn't have to speak perfect English, travel to a station, or risk being brushed aside to be heard. Speak naturally   Igbo, English, or a mix   and DengeVoice turns it into a clear report for the right office.",
-  heroKicker: "The dignified way to report",
+    "You shouldn't have to speak perfect English, travel to a station, or risk being brushed aside to be heard. Speak naturally in your own language and DengeVoice turns it into a clear report for the right office.",
   ctaStart: "Start a report",
   ctaTypeInstead: "Type instead",
 
@@ -50,7 +62,7 @@ const en = {
     "Too many people stay silent   afraid of being mocked for how they speak, dismissed at the counter, or identified and targeted later. DengeVoice removes every one of those reasons.",
   trust1Title: "No language barrier",
   trust1Body:
-    "Speak the way you actually speak   Igbo, English, or both. No formal English required, no interpreter needed.",
+    "Speak the way you actually speak. No formal English required, no interpreter needed.",
   trust2Title: "No travel required",
   trust2Body:
     "Report from wherever you are. No queue at a station, no waiting for hours to be attended to.",
@@ -103,7 +115,7 @@ const en = {
   featureBandTitle: "Built to remove every barrier to being heard",
   feature1Title: "Speak naturally",
   feature1Body:
-    "Mixing Igbo and English is fine   no need to translate yourself first.",
+    "Speak your own language, mix in English freely   no need to translate yourself first.",
   feature2Title: "Track every step",
   feature2Body:
     "A tracking ID means you always know where your report stands.",
@@ -123,59 +135,165 @@ const en = {
 
   recordTitle: "Tell us what happened",
   recordVoiceHint:
-    "Tap the mic and speak naturally   mixing Igbo and English is completely fine.",
+    "Tap the mic and speak naturally   mixing your language with English is completely fine.",
   recordListening: "Listening… tap to stop",
   recordProcessing: "Turning your words into a report…",
   recordUseVoiceLink: "Use voice instead",
   recordContinueBtn: "Continue",
   recordTypedPlaceholder: "Describe what happened, where, and when…",
+  recordLanguageLabel: "What language will you speak?",
+  recordMicError:
+    "Couldn't access your microphone. Check browser permissions, or use 'Type instead' below.",
+  recordTranscribeError:
+    "Something went wrong transcribing your recording. Try 'Type instead' below.",
+  recordTryAgain: "Try again",
+  recordCharacters: "characters",
+
+  // ----- Confirm screen -----
+  confirmTitle: "Does this look right?",
+  confirmSubtitle:
+    "We've turned what you said into a report. Read it over, fix anything that's off, and send it when you're happy.",
+  confirmReviewing: "Reviewing your report…",
+  confirmAutofillError:
+    "Auto-fill isn't available right now. Please fill the fields below manually.",
+  confirmFieldSaid: "What you said",
+  confirmFieldOriginalSummary: "Summary in your language",
+  confirmOriginalSummaryPlaceholder:
+    "A summary in your own language, so you can check it reads right.",
+  confirmFieldEnglishSummary: "English summary",
+  confirmFieldCategory: "Category",
+  confirmCategoryPlaceholder: "Select a category",
+  confirmFieldLocation: "Location",
+  confirmLocationPlaceholder: "e.g. Aba, Abia State",
+  confirmFieldUrgency: "Urgency",
+  confirmUrgencyLow: "Low",
+  confirmUrgencyMedium: "Medium",
+  confirmUrgencyHigh: "High",
+  confirmUrgencyEmergency: "Emergency",
+  confirmFieldOutcome: "What would you like to happen?",
+  confirmAnonTitle: "Submit anonymously",
+  confirmAnonBody: "Your name and contact won't be attached to this report.",
+  confirmNamePlaceholder: "Your name",
+  confirmPhonePlaceholder: "Phone number",
+  confirmSubmitBtn: "Submit report",
+  confirmSubmitting: "Submitting…",
+  confirmSubmitError: "Submission failed",
+
+  // ----- Track screen -----
+  trackTitle: "Track your report",
+  trackSubmittedTitle: "Report submitted",
+  trackSubmittedBody:
+    "Save this tracking ID to check your report's status anytime:",
+  trackCopy: "Copy",
+  trackCopied: "Copied",
+  trackCopyId: "Copy ID",
+  trackIdLabel: "Tracking ID",
+  trackCheckBtn: "Check",
+  trackLookingUp: "Looking it up…",
+  trackNotFound:
+    "We couldn't find a report with that tracking ID. Double-check and try again.",
+  trackError: "Something went wrong looking that up. Try again in a moment.",
+  trackCategoryLabel: "Category",
+  trackSubmittedLabel: "Submitted",
+  trackReportAnother: "Report another issue",
+  trackIdCopiedToast: "Tracking ID copied",
+
+  // ----- Status labels (report lifecycle) -----
+  statusReceived: "Received",
+  statusUnderReview: "Under review",
+  statusInProgress: "In progress",
+  statusResolved: "Resolved",
+  statusClosed: "Closed",
 };
 
-const prompt = `Translate the following JSON object's values from English to Igbo.
-This is UI copy for a civic complaint-reporting app aimed at everyday Igbo speakers
-(including people with low literacy), so keep it plain, warm, and natural spoken Igbo  
-not formal/academic Igbo, not a literal word-for-word translation.
+function buildPrompt(langName) {
+  return `Translate the following JSON object's values from English to ${langName}.
+This is UI copy for a civic complaint-reporting app aimed at everyday ${langName} speakers
+(including people with low literacy), so keep it plain, warm, and natural spoken ${langName} --
+not formal/academic ${langName}, not a literal word-for-word translation.
 
-Keep every key exactly the same. Return ONLY a valid JSON object, no markdown fences,
+Keep every key exactly the same. Do NOT translate the brand name "DengeVoice" or the
+tracking-ID format "DGV-XXXX-XXXX". Return ONLY a valid JSON object, no markdown fences,
 no commentary, no preamble.
 
 ${JSON.stringify(en, null, 2)}`;
+}
 
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
 
-const result = await model.generateContent(prompt);
-const raw = result.response.text().trim();
-const cleaned = raw.replace(/^```json\s*/i, "").replace(/```\s*$/i, "");
-
-let ig;
-try {
-  ig = JSON.parse(cleaned);
-} catch {
-  console.error("Gemini didn't return valid JSON. Raw response:\n", raw);
-  process.exit(1);
+async function translateTo(langName) {
+  const result = await model.generateContent(buildPrompt(langName));
+  const raw = result.response.text().trim();
+  const cleaned = raw.replace(/^```json\s*/i, "").replace(/```\s*$/i, "");
+  return { raw, parsed: JSON.parse(cleaned) };
 }
 
-// Keep app name and rights line untranslated (brand name / attribution).
-ig.appName = "DengeVoice";
-ig.footerRights = en.footerRights;
-ig.langToggleLabel = ig.langToggleLabel || "Asụsụ";
+// The Gemini endpoint occasionally drops a connection ("fetch failed") or
+// returns non-JSON. Retry a few times with a short backoff before giving up,
+// so one network blip doesn't waste the whole run.
+async function translateWithRetry(langName, attempts = 4) {
+  let lastErr;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return await translateTo(langName);
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts) {
+        const waitMs = 1500 * i;
+        process.stdout.write(`retry ${i}/${attempts - 1} in ${waitMs}ms… `);
+        await new Promise((r) => setTimeout(r, waitMs));
+      }
+    }
+  }
+  throw lastErr;
+}
 
-const fileContent = `// Landing page copy in both languages.
-// The "ig" (Igbo) strings were generated by Gemini via scripts/translate-igbo.mjs
+// Generate every target language. Done sequentially (not Promise.all) to stay
+// gentle on rate limits and make a single failure easy to pin to a language.
+const generated = {};
+for (const { code, name } of TARGET_LANGUAGES) {
+  process.stdout.write(`Translating -> ${name} (${code})… `);
+  try {
+    const { parsed } = await translateWithRetry(name);
+    // Keep brand name / attribution untranslated.
+    parsed.appName = "DengeVoice";
+    parsed.footerRights = en.footerRights;
+    generated[code] = parsed;
+    console.log("done");
+  } catch (err) {
+    console.error(`\nFailed on ${name}: ${err.message}`);
+    process.exit(1);
+  }
+}
+
+// Assemble copy object: English source first, then each generated language.
+const allLangs = { en, ...generated };
+const langBlocks = Object.entries(allLangs)
+  .map(
+    ([code, obj]) =>
+      `  ${code}: ${JSON.stringify(obj, null, 4).replace(/\n/g, "\n  ")},`
+  )
+  .join("\n");
+
+const codeUnion = ["en", ...TARGET_LANGUAGES.map((l) => l.code)]
+  .map((c) => `"${c}"`)
+  .join(" | ");
+
+const fileContent = `// App UI copy in every supported language.
+// Non-English strings were generated by Gemini via scripts/translate-igbo.mjs
 //   machine-translated, NOT yet reviewed by a native speaker. Have someone
-// fluent check this before it ships to real users, then you can remove this note.
+// fluent check each language before it ships to real users, then remove this note.
 
-export type Lang = "en" | "ig";
+export type Lang = ${codeUnion};
 
 export const copy: Record<Lang, Record<string, string>> = {
-  en: ${JSON.stringify(en, null, 4).replace(/\n/g, "\n  ")},
-  ig: ${JSON.stringify(ig, null, 4).replace(/\n/g, "\n  ")},
+${langBlocks}
 };
 `;
 
 const outPath = path.join(__dirname, "..", "lib", "i18n.ts");
 writeFileSync(outPath, fileContent, "utf-8");
 
-console.log("✅ lib/i18n.ts updated with Gemini-generated Igbo copy.");
+console.log("\n✅ lib/i18n.ts updated with Gemini-generated copy for:", Object.keys(allLangs).join(", "));
 console.log("⚠️  Still needs native-speaker review before shipping.");

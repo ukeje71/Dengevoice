@@ -144,6 +144,8 @@ const en = {
   recordLanguageLabel: "What language will you speak?",
   recordMicError:
     "Couldn't access your microphone. Check browser permissions, or use 'Type instead' below.",
+  recordMicUnsupported:
+    "Your browser blocked recording here — this page needs a secure (https) or localhost address. If you opened the app over a network link, use 'Type instead' below.",
   recordTranscribeError:
     "Something went wrong transcribing your recording. Try 'Type instead' below.",
   recordTryAgain: "Try again",

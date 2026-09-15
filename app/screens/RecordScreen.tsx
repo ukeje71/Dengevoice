@@ -40,6 +40,21 @@ export default function RecordScreen({ initialMode }: { initialMode: Mode }) {
 
   async function startRecording() {
     setErrorMsg(null);
+
+
+    // "check permissions" error, and steer the citizen to the type-instead path.
+    const canRecord =
+      typeof navigator !== "undefined" &&
+      !!navigator.mediaDevices?.getUserMedia &&
+      typeof window !== "undefined" &&
+      typeof window.MediaRecorder !== "undefined";
+
+    if (!canRecord) {
+      setErrorMsg(t.recordMicUnsupported);
+      setState("error");
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);

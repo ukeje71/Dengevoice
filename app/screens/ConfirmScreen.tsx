@@ -124,9 +124,7 @@ export default function ConfirmScreen() {
               <h1 className="mb-1 text-balance font-[family-name:var(--font-display)] text-2xl font-semibold text-indigo">
                 {t.confirmTitle}
               </h1>
-              <p className="mb-6 text-sm text-ink/60">
-                {t.confirmSubtitle}
-              </p>
+              <p className="mb-6 text-sm text-ink/60">{t.confirmSubtitle}</p>
 
               {structureError && (
                 <motion.div
@@ -142,7 +140,7 @@ export default function ConfirmScreen() {
                 initial="hidden"
                 animate="show"
                 variants={{ show: { transition: { staggerChildren: 0.06 } } }}
-                className="rounded-[2.5rem] border border-indigo/10 bg-white/50 p-6 sm:p-8"
+                className="rounded-[2.25rem] border border-indigo/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.72),rgba(247,239,221,0.7))] p-5 shadow-[0_24px_60px_rgba(34,48,74,0.08)] ring-1 ring-white/60 sm:p-8"
               >
                 <Field variants={fieldVariants} label={t.confirmFieldSaid}>
                   <textarea
@@ -172,7 +170,10 @@ export default function ConfirmScreen() {
                   </Field>
                 )}
 
-                <Field variants={fieldVariants} label={t.confirmFieldEnglishSummary}>
+                <Field
+                  variants={fieldVariants}
+                  label={t.confirmFieldEnglishSummary}
+                >
                   <textarea
                     value={draft.translatedSummary ?? ""}
                     onChange={(e) =>
@@ -213,29 +214,27 @@ export default function ConfirmScreen() {
                 </Field>
 
                 <Field variants={fieldVariants} label={t.confirmFieldUrgency}>
-                  <div className="mb-6 grid grid-cols-4 gap-2">
+                  <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {(["low", "medium", "high", "emergency"] as Urgency[]).map(
                       (u) => {
                         const active = draft.urgency === u;
-                        // Literal class strings per level (no dynamically-built
-                        // class names — Tailwind must see them at build time).
                         const activeClass = URGENCY_ACTIVE[u];
                         return (
                           <motion.button
                             key={u}
                             type="button"
-                            whileTap={{ scale: 0.95 }}
-                            animate={{ scale: active ? 1.04 : 1 }}
+                            whileTap={{ scale: 0.96 }}
+                            animate={{ scale: active ? 1.02 : 1 }}
                             transition={{
                               type: "spring",
-                              stiffness: 400,
-                              damping: 25,
+                              stiffness: 450,
+                              damping: 24,
                             }}
                             onClick={() => setDraft({ urgency: u })}
-                            className={`rounded-full border px-2 py-2 text-xs font-medium transition-colors sm:text-sm ${
+                            className={`rounded-2xl border px-3 py-2.5 text-xs font-semibold tracking-wide transition-all duration-200 sm:text-sm ${
                               active
-                                ? activeClass
-                                : "border-indigo/20 bg-white/70 text-indigo hover:border-indigo/40"
+                                ? `${activeClass} shadow-[0_10px_24px_rgba(34,48,74,0.12)]`
+                                : "border-indigo/15 bg-white/80 text-indigo hover:border-indigo/35 hover:bg-indigo/5"
                             }`}
                           >
                             {t[URGENCY_LABEL_KEYS[u]] ?? u}
@@ -246,10 +245,7 @@ export default function ConfirmScreen() {
                   </div>
                 </Field>
 
-                <Field
-                  variants={fieldVariants}
-                  label={t.confirmFieldOutcome}
-                >
+                <Field variants={fieldVariants} label={t.confirmFieldOutcome}>
                   <textarea
                     value={draft.desiredOutcome ?? ""}
                     onChange={(e) =>
@@ -262,21 +258,21 @@ export default function ConfirmScreen() {
 
                 <motion.div
                   variants={fieldVariants}
-                  className={`mb-4 flex items-center justify-between  rounded-sm border p-4 transition-colors duration-300 ${
+                  className={`mb-4 flex flex-col gap-3 rounded-[1.5rem] border p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] transition-all duration-300 sm:flex-row sm:items-center sm:justify-between ${
                     draft.isAnonymous
-                      ? "border-palm/40 bg-palm/10"
-                      : "border-indigo/20 bg-white/70"
+                      ? "border-palm/30 bg-gradient-to-r from-palm/12 via-white/70 to-white/90"
+                      : "border-indigo/15 bg-white/80"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
                     <motion.span
                       animate={{
                         backgroundColor: draft.isAnonymous
                           ? "#4F7942"
-                          : "#22304A1A",
+                          : "rgba(34, 48, 74, 0.08)",
                         color: draft.isAnonymous ? "#F7EFDD" : "#22304A",
                       }}
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-inner"
                     >
                       <svg
                         width="16"
@@ -292,15 +288,16 @@ export default function ConfirmScreen() {
                         <path d="M8 11V7a4 4 0 0 1 8 0v4" />
                       </svg>
                     </motion.span>
-                    <div>
-                      <p className="font-semibold text-indigo">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold text-indigo">
                         {t.confirmAnonTitle}
                       </p>
-                      <p className="text-xs text-ink/60">
+                      <p className="text-xs leading-relaxed text-ink/60">
                         {t.confirmAnonBody}
                       </p>
                     </div>
                   </div>
+
                   <button
                     type="button"
                     onClick={() =>
@@ -308,18 +305,25 @@ export default function ConfirmScreen() {
                     }
                     aria-pressed={draft.isAnonymous}
                     aria-label={t.confirmAnonTitle}
-                    className={`h-7 w-12 shrink-0 rounded-full transition-colors duration-300 ${
-                      draft.isAnonymous ? "bg-palm" : "bg-ink/20"
+                    className={`relative ml-auto h-8 w-14 shrink-0 rounded-full border transition-all duration-300 sm:ml-0 ${
+                      draft.isAnonymous
+                        ? "border-palm/60 bg-palm shadow-[0_8px_18px_rgba(79,121,66,0.25)]"
+                        : "border-indigo/15 bg-indigo/10"
                     }`}
                   >
                     <motion.span
-                      animate={{ x: draft.isAnonymous ? 24 : 4 }}
+                      animate={{
+                        x: draft.isAnonymous ? 28 : 4,
+                        backgroundColor: draft.isAnonymous
+                          ? "#fffdf7"
+                          : "#ffffff",
+                      }}
                       transition={{
                         type: "spring",
                         stiffness: 500,
                         damping: 30,
                       }}
-                      className="block h-5 w-5 translate-y-1 rounded-full bg-white shadow-sm"
+                      className="absolute top-1 h-5 w-5 rounded-full bg-white shadow-[0_4px_10px_rgba(34,48,74,0.18)]"
                     />
                   </button>
                 </motion.div>
@@ -395,7 +399,7 @@ export default function ConfirmScreen() {
 }
 
 const inputClass =
-  "mb-6 w-full  rounded-sm border border-indigo/20 bg-white/70 p-3 text-ink outline-none transition-all duration-200 focus:border-indigo focus:ring-4 focus:ring-indigo/10";
+  "mb-6 w-full rounded-2xl border border-indigo/15 bg-white/80 px-4 py-3 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] outline-none transition-all duration-200 placeholder:text-ink/35 focus:border-indigo focus:bg-white focus:ring-4 focus:ring-indigo/10";
 
 // Full literal class strings per urgency level. Higher urgency reads hotter
 // (palm → indigo → marigold → brick), giving the selector a sense of weight.
@@ -427,7 +431,7 @@ function Field({
 }) {
   return (
     <motion.div variants={variants}>
-      <label className="mb-1 block text-sm font-semibold text-indigo">
+      <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo/80">
         {label}
       </label>
       {children}

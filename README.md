@@ -1,6 +1,6 @@
 # DengeVoice
 
-DengeVoice is a voice-first civic complaint app designed for the Sahara CodeSwitch Africa Challenge 2026. It helps citizens report issues in natural, code-switched speech such as Igbo-English, then transforms that speech into a structured and trackable complaint that can be reviewed and submitted with minimal friction.
+DengeVoice is a voice-first civic complaint app designed for the Sahara CodeSwitch Africa Challenge 2026. It helps citizens report issues in natural, code-switched speech such as Igbo , Yoruba, Hausa, Pidgin -English, then transforms that speech into a structured and trackable complaint that can be reviewed and submitted with minimal friction.
 
 The product sits in the Legal & Public Services track and is built to solve a real operational problem: people often know what is wrong in their communities, but formal complaint systems are too rigid, text-heavy, and inaccessible for everyday spoken usage in multilingual contexts.
 
@@ -221,7 +221,7 @@ This project was intentionally built to be fast to understand and easy to iterat
 
 - use stable IDs instead of translated text for UI logic
 - avoid dynamic Tailwind class names that are not statically present
-- respect the app’s language architecture and keep English and Igbo copy in sync
+- respect the app’s language architecture and keep English and Igbo ,Yoruba, Hausa, Pidgin copy in sync
 - keep the complaint schema consistent with the Supabase table
 - do not expose service-role secrets in any frontend or documentation artifacts
 
